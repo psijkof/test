@@ -1,0 +1,31 @@
+﻿@page "/"
+@inject IWebHostEnvironment Env
+@inject IConfiguration Configuration
+
+<PageTitle>Home</PageTitle>
+
+<h1>Test Blazor Server app</h1>
+
+<pre>
+    Here we test the stuff
+</pre> 
+
+<h2>Runtime Information</h2>
+<pre>
+    On @System.Runtime.InteropServices.RuntimeInformation.OSDescription
+    This app is running on .NET via Environment version @System.Environment.Version
+    Framework description: @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription
+    OS architecture: @System.Runtime.InteropServices.RuntimeInformation.OSArchitecture
+    Process architecture: @System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture
+    Current directory: @System.IO.Directory.GetCurrentDirectory()
+
+    ASP.NET Core environment: @(Env.IsDevelopment() ? "Development" : "Production")
+    Content root path: @Env.ContentRootPath
+    Web root path: @Env.WebRootPath
+    @Env.EnvironmentName
+    @Env.ApplicationName
+    @Env.ContentRootFileProvider.GetFileInfo("./").LastModified
+
+    @Configuration.GetChildren().Select(c => $"{c.Key}={c.Value}").Aggregate((a, b) => $"{a}\n{b}") 
+
+</pre>

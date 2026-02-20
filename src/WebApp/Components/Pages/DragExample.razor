@@ -1,0 +1,187 @@
+@page "/drag-example"
+
+<PageTitle>Drag Example</PageTitle>
+
+<h1>Drag Example</h1>
+<p class="text-muted">
+    Drag items from the <strong>Middle</strong> list to <strong>Left</strong> or <strong>Right</strong>,
+    and drag items from <strong>Left</strong> or <strong>Right</strong> back to <strong>Middle</strong>.
+</p>
+
+<div class="row mt-4 g-3">
+
+    <!-- Left List -->
+    <div class="col-4">
+        <div class="card h-100 @(dragSource != null ? (IsValidDropTarget("left") ? "border-primary shadow-sm" : "opacity-50") : "")">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Left</h5>
+                <span class="badge bg-light text-dark">@leftItems.Count</span>
+            </div>
+            <div class="card-body p-0"
+                 style="min-height:250px; @(dragTarget == "left" && IsValidDropTarget("left") ? "background-color:#cfe2ff;" : "")"
+                 @ondragover:preventDefault
+                 @ondragenter="@(() => dragTarget = "left")"
+                 @ondrop="@(() => Drop("left"))">
+                <ul class="list-group list-group-flush">
+                    @foreach (var item in leftItems)
+                    {
+                        var captured = item;
+                        <li class="list-group-item d-flex align-items-center gap-2"
+                            draggable="true"
+                            style="cursor:grab"
+                            @ondragstart="@(() => DragStart(captured, "left"))"
+                            @ondragend="DragEnd">
+                            <span class="text-muted">&#9776;</span>
+                            <span class="flex-grow-1">@captured</span>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-1" title="Remove" @onclick="@(() => MoveItem(captured, "left", "middle"))">&times;</button>
+                        </li>
+                    }
+                </ul>
+                @if (!leftItems.Any())
+                {
+                    <div class="d-flex align-items-center justify-content-center h-100 text-muted fst-italic p-3" style="min-height:200px">
+                        (no items)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Middle List -->
+    <div class="col-4">
+        <div class="card h-100 @(dragSource != null ? (IsValidDropTarget("middle") ? "border-success shadow-sm" : "opacity-50") : "")">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Middle</h5>
+                <span class="badge bg-light text-dark">@middleItems.Count</span>
+            </div>
+            <div class="card-body p-0"
+                 style="min-height:250px; @(dragTarget == "middle" && IsValidDropTarget("middle") ? "background-color:#d1e7dd;" : "")"
+                 @ondragover:preventDefault
+                 @ondragenter="@(() => dragTarget = "middle")"
+                 @ondrop="@(() => Drop("middle"))">
+                <ul class="list-group list-group-flush">
+                    @foreach (var item in middleItems)
+                    {
+                        var captured = item;
+                        <li class="list-group-item d-flex align-items-center gap-2"
+                            draggable="true"
+                            style="cursor:grab"
+                            @ondragstart="@(() => DragStart(captured, "middle"))"
+                            @ondragend="DragEnd">
+                            <button class="btn btn-sm btn-outline-primary py-0 px-1" title="Move to Left" @onclick="@(() => MoveItem(captured, "middle", "left"))">&larr;</button>
+                            <span class="text-muted">&#9776;</span>
+                            <span class="flex-grow-1">@captured</span>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-1" title="Move to Right" @onclick="@(() => MoveItem(captured, "middle", "right"))">&rarr;</button>
+                        </li>
+                    }
+                </ul>
+                @if (!middleItems.Any())
+                {
+                    <div class="d-flex align-items-center justify-content-center h-100 text-muted fst-italic p-3" style="min-height:200px">
+                        (no items)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Right List -->
+    <div class="col-4">
+        <div class="card h-100 @(dragSource != null ? (IsValidDropTarget("right") ? "border-danger shadow-sm" : "opacity-50") : "")">
+            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Right</h5>
+                <span class="badge bg-light text-dark">@rightItems.Count</span>
+            </div>
+            <div class="card-body p-0"
+                 style="min-height:250px; @(dragTarget == "right" && IsValidDropTarget("right") ? "background-color:#f8d7da;" : "")"
+                 @ondragover:preventDefault
+                 @ondragenter="@(() => dragTarget = "right")"
+                 @ondrop="@(() => Drop("right"))">
+                <ul class="list-group list-group-flush">
+                    @foreach (var item in rightItems)
+                    {
+                        var captured = item;
+                        <li class="list-group-item d-flex align-items-center gap-2"
+                            draggable="true"
+                            style="cursor:grab"
+                            @ondragstart="@(() => DragStart(captured, "right"))"
+                            @ondragend="DragEnd">
+                            <span class="text-muted">&#9776;</span>
+                            <span class="flex-grow-1">@captured</span>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-1" title="Remove" @onclick="@(() => MoveItem(captured, "right", "middle"))">&times;</button>
+                        </li>
+                    }
+                </ul>
+                @if (!rightItems.Any())
+                {
+                    <div class="d-flex align-items-center justify-content-center h-100 text-muted fst-italic p-3" style="min-height:200px">
+                        (no items)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    private List<string> leftItems = [];
+    private List<string> middleItems = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew"];
+    private List<string> rightItems = [];
+
+    private string? dragItem;
+    private string? dragSource;
+    private string? dragTarget;
+
+    private bool IsValidDropTarget(string target)
+    {
+        if (dragSource is null) return false;
+        return dragSource switch
+        {
+            "middle" => target is "left" or "right",
+            "left" or "right" => target is "middle",
+            _ => false
+        };
+    }
+
+    private void DragStart(string item, string source)
+    {
+        dragItem = item;
+        dragSource = source;
+        dragTarget = null;
+    }
+
+    private void DragEnd()
+    {
+        dragItem = null;
+        dragSource = null;
+        dragTarget = null;
+    }
+
+    private void Drop(string target)
+    {
+        if (dragItem is null || dragSource is null) return;
+        if (!IsValidDropTarget(target)) return;
+
+        GetList(dragSource).Remove(dragItem);
+        GetList(target).Add(dragItem);
+
+        dragItem = null;
+        dragSource = null;
+        dragTarget = null;
+    }
+
+    private void MoveItem(string item, string source, string target)
+    {
+        GetList(source).Remove(item);
+        GetList(target).Add(item);
+    }
+
+    private List<string> GetList(string name) => name switch
+    {
+        "left"   => leftItems,
+        "middle" => middleItems,
+        "right"  => rightItems,
+        _        => throw new ArgumentOutOfRangeException(nameof(name), name, null)
+    };
+}

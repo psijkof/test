@@ -1,0 +1,112 @@
+@page "/drag-order-example"
+
+<PageTitle>Drag Order Example</PageTitle>
+
+<h1>Drag Order Example</h1>
+<p class="text-muted">Drag rows to reorder them.</p>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">Items</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:2.5rem"></th>
+                            <th style="width:3rem">#</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Value</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < items.Count; i++)
+                        {
+                            var index = i;
+                            var item = items[i];
+                            <tr draggable="true"
+                                style="cursor:grab; @(dragOverIndex == index && dragSourceIndex != index ? "border-top: 2px solid #0d6efd;" : "")"
+                                class="@(dragSourceIndex == index ? "table-active opacity-50" : "")"
+                                @ondragstart="@(() => DragStart(index))"
+                                @ondragend="DragEnd"
+                                @ondragover:preventDefault
+                                @ondragenter="@(() => dragOverIndex = index)"
+                                @ondrop="@(() => Drop(index))">
+                                <td class="text-muted text-center" style="font-size:1.1rem">&#9776;</td>
+                                <td class="text-muted">@(index + 1)</td>
+                                <td class="fw-semibold">@item.Name</td>
+                                <td><span class="badge @item.BadgeClass">@item.Category</span></td>
+                                <td>@item.Value</td>
+                                <td>
+                                    <input type="text"
+                                           class="form-control form-control-sm"
+                                           style="min-width:10rem"
+                                           placeholder="Add a note…"
+                                           aria-label="Notes for @item.Name"
+                                           @bind="item.Notes"
+                                           @bind:event="oninput" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private class GridItem(string name, string category, string badgeClass, string value)
+    {
+        public string Name      { get; } = name;
+        public string Category  { get; } = category;
+        public string BadgeClass { get; } = badgeClass;
+        public string Value     { get; } = value;
+        public string Notes     { get; set; } = string.Empty;
+    }
+
+    private List<GridItem> items =
+    [
+        new("Apple",      "Fruit",     "bg-success",   "$1.20"),
+        new("Banana",     "Fruit",     "bg-success",   "$0.50"),
+        new("Carrot",     "Vegetable", "bg-warning text-dark", "$0.80"),
+        new("Date",       "Fruit",     "bg-success",   "$3.50"),
+        new("Eggplant",   "Vegetable", "bg-warning text-dark", "$2.10"),
+        new("Fig",        "Fruit",     "bg-success",   "$4.00"),
+        new("Garlic",     "Vegetable", "bg-warning text-dark", "$0.60"),
+        new("Honeydew",   "Fruit",     "bg-success",   "$5.00"),
+        new("Iceberg",    "Vegetable", "bg-warning text-dark", "$1.00"),
+        new("Jalapeño",   "Vegetable", "bg-warning text-dark", "$0.90"),
+    ];
+
+    private int dragSourceIndex = -1;
+    private int dragOverIndex = -1;
+
+    private void DragStart(int index)
+    {
+        dragSourceIndex = index;
+        dragOverIndex = -1;
+    }
+
+    private void DragEnd()
+    {
+        dragSourceIndex = -1;
+        dragOverIndex = -1;
+    }
+
+    private void Drop(int targetIndex)
+    {
+        if (dragSourceIndex < 0 || dragSourceIndex == targetIndex) return;
+
+        var item = items[dragSourceIndex];
+        items.RemoveAt(dragSourceIndex);
+        items.Insert(targetIndex, item);
+
+        dragSourceIndex = -1;
+        dragOverIndex = -1;
+    }
+}
