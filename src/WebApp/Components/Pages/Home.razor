@@ -8,7 +8,7 @@
 
 <pre>
     Here we test the stuff
-</pre> 
+</pre>
 
 <h2>Runtime Information</h2>
 <pre>
@@ -25,7 +25,7 @@
     @Env.EnvironmentName
     @Env.ApplicationName
     @Env.ContentRootFileProvider.GetFileInfo("./").LastModified
+    Machine name: @Environment.MachineName
 
     @Configuration.GetChildren().Select(c => $"{c.Key}={c.Value}").Aggregate((a, b) => $"{a}\n{b}") 
-
 </pre>
