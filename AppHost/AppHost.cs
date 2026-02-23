@@ -2,13 +2,8 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddDockerComposeEnvironment("compose")
-    .WithDashboard(true)
-    .ConfigureComposeFile(composeFile =>
-    {
-        composeFile.Services["dashboard"]
-            .Ports.AddRange(["18888:18888"]);
-    });
+builder.AddDockerComposeEnvironment("aspirestack")
+    .WithDashboard(true);
 
 var adminPassword = builder.AddParameter("admin-password", secret: true);
 
