@@ -2,8 +2,7 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddDockerComposeEnvironment("aspirestack")
-    .WithDashboard(true);
+builder.AddDockerComposeEnvironment("aspirestack");
 
 var adminPassword = builder.AddParameter("admin-password", secret: true);
 
