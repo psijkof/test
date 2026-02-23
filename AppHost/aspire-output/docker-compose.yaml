@@ -47,3 +47,6 @@ services:
 networks:
   aspire:
     driver: "bridge"
+
+# podman compose -f "E:\source\test\AppHost\aspire-output\docker-compose.yaml" --project-name "aspire-aspirestack-a6756d11" --env-file "E:\source\test\AppHost\aspire-output\.env.Production" up -d --remove-orphans
+# podman compose -f "./test/AppHost/aspire-output/docker-compose.yaml" --project-name "aspire-aspirestack-a6756d11" --env-file "./test/AppHost/aspire-output/.env.Production" up -d --remove-orphans
