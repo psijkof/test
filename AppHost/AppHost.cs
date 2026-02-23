@@ -1,8 +1,27 @@
-using Json.More;
 using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var test = builder.AddProject<Projects.WebApp>(nameof(Projects.WebApp)).Resource.ToJsonDocument();
+builder.AddDockerComposeEnvironment("compose")
+    .WithDashboard(true)
+    .ConfigureComposeFile(composeFile =>
+    {
+        composeFile.Services["compose-dashboard"]
+            .Ports.AddRange(["18888:18888"]);
+    });
 
-builder.Build().Run();
+var adminPassword = builder.AddParameter("admin-password", secret: true);
+
+var db = builder.AddSqlServer("sqlserver", adminPassword)
+    .WithLifetime(ContainerLifetime.Persistent)
+    .PublishAsDockerComposeService((r, s) => { s.Name = "sqlserver"; })
+    .AddDatabase("EcoBpc");
+
+builder.AddProject<WebApp>(nameof(WebApp), "https")
+    .WithExternalHttpEndpoints()
+    .WithReference(db)
+    .WaitFor(db)
+    .PublishAsDockerComposeService((dcsr, serv) => { serv.Name = nameof(WebApp); });
+
+
+await builder.Build().RunAsync();
