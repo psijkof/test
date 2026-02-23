@@ -6,7 +6,7 @@ builder.AddDockerComposeEnvironment("compose")
     .WithDashboard(true)
     .ConfigureComposeFile(composeFile =>
     {
-        composeFile.Services["compose-dashboard"]
+        composeFile.Services["dashboard"]
             .Ports.AddRange(["18888:18888"]);
     });
 
@@ -18,6 +18,7 @@ var db = builder.AddSqlServer("sqlserver", adminPassword)
     .AddDatabase("EcoBpc");
 
 builder.AddProject<WebApp>(nameof(WebApp), "https")
+    .WithHealthCheck("/health")
     .WithExternalHttpEndpoints()
     .WithReference(db)
     .WaitFor(db)
