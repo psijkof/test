@@ -18,7 +18,6 @@ var db = builder.AddSqlServer("sqlserver", adminPassword)
     .AddDatabase("EcoBpc");
 
 builder.AddProject<WebApp>(nameof(WebApp), "https")
-    .WithHealthCheck("/health")
     .WithExternalHttpEndpoints()
     .WithReference(db)
     .WaitFor(db)
