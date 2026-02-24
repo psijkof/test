@@ -1,6 +1,7 @@
 ﻿@page "/"
 @inject IWebHostEnvironment Env
 @inject IConfiguration Configuration
+@inject ILogger<Home> Logger
 
 <PageTitle>Home</PageTitle>
 
@@ -29,3 +30,12 @@
 
     @Configuration.GetChildren().Select(c => $"{c.Key}={c.Value}").Aggregate((a, b) => $"{a}\n{b}") 
 </pre>
+
+@code {
+
+    protected override Task OnInitializedAsync()
+    {
+        base.OnInitializedAsync();
+        return Task.CompletedTask;
+    }
+}

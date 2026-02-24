@@ -13,10 +13,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Seq" Version="13.1.1" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.MailPit" Version="13.1.1" />
+    <PackageReference Include="MailKit" Version="4.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.3" />
+    <PackageReference Include="Seq.Extensions.Logging" Version="9.0.0" />
   </ItemGroup>
 
 </Project>

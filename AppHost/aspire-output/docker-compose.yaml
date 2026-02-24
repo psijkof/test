@@ -9,6 +9,34 @@ services:
     networks:
       - "aspire"
     restart: "always"
+  seq:
+    image: "docker.io/datalust/seq:2025.2"
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_NOAUTHENTICATION: "True"
+    expose:
+      - "80"
+    volumes:
+      - type: "volume"
+        target: "/data"
+        source: "apphost-feed4158f1-seq-data"
+        read_only: false
+    networks:
+      - "aspire"
+  mailpit:
+    image: "docker.io/axllent/mailpit:v1.22.3"
+    environment:
+      MP_DATABASE: "/data/mailpit.db"
+    expose:
+      - "1025"
+      - "8025"
+    volumes:
+      - type: "volume"
+        target: "/data"
+        source: "maildata"
+        read_only: false
+    networks:
+      - "aspire"
   sqlserver:
     image: "mcr.microsoft.com/mssql/server:2022-latest"
     environment:
@@ -34,6 +62,14 @@ services:
       ECOBPC_URI: "mssql://sa:${ADMIN_PASSWORD}@sqlserver:1433/EcoBpc"
       ECOBPC_JDBCCONNECTIONSTRING: "jdbc:sqlserver://sqlserver:1433;trustServerCertificate=true;databaseName=EcoBpc"
       ECOBPC_DATABASENAME: "EcoBpc"
+      ConnectionStrings__seq: "http://seq:80"
+      SEQ_HOST: "seq"
+      SEQ_PORT: "80"
+      SEQ_URI: "http://seq:80"
+      ConnectionStrings__mailpit: "Endpoint=smtp://mailpit:1025"
+      MAILPIT_HOST: "mailpit"
+      MAILPIT_PORT: "1025"
+      MAILPIT_URI: "smtp://mailpit:1025"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://aspirestack-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "WebApp"
@@ -42,22 +78,17 @@ services:
     depends_on:
       sqlserver:
         condition: "service_started"
+      seq:
+        condition: "service_started"
+      mailpit:
+        condition: "service_started"
     networks:
       - "aspire"
 networks:
   aspire:
     driver: "bridge"
-
-# podman compose -f "E:\source\test\AppHost\aspire-output\docker-compose.yaml" --project-name "aspire-aspirestack-a6756d11" --env-file "E:\source\test\AppHost\aspire-output\.env.Production" up -d --remove-orphans
-# podman compose -f "./test/AppHost/aspire-output/docker-compose.yaml" --project-name "aspire-aspirestack-a6756d11" --env-file "./test/AppHost/aspire-output/.env.Production" up -d --remove-orphans
-
-# .env.Production
-
-# Parameter admin-password
-#ADMIN_PASSWORD=P@ssw0rd!!
-
-# Container image name for WebApp
-#WEBAPP_IMAGE=webapp:aspire-deploy-20260223210349
-
-# Default container port for WebApp
-#WEBAPP_PORT=8080
+volumes:
+  apphost-feed4158f1-seq-data:
+    driver: "local"
+  maildata:
+    driver: "local"

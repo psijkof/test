@@ -1,0 +1,41 @@
+﻿@page "/mail"
+
+@inject IConfiguration Configuration
+
+@using MailKit.Net.Smtp;
+@using MimeKit;
+
+<h3>Mail</h3>
+
+<button @onclick="@(async () => await SendEmailAsync("user@localhost.test", "test email", "dear user, you read this, so it works!"))" type="button">Send an email</button>
+
+@code {
+    private string _smtpHost = string.Empty;
+    private int _smtpPort;
+
+    protected override Task OnParametersSetAsync()
+    {
+        base.OnParametersSetAsync();
+
+        var smtpUri = Configuration.GetConnectionString("mailpit")?.Split('=')[1] ?? "localhost:25";
+        var uri = new Uri(smtpUri);
+        _smtpHost = uri.Host;
+        _smtpPort = uri.Port;
+
+        return Task.CompletedTask;
+    }
+
+    public async Task SendEmailAsync(string to, string subject, string body)
+    {
+        using var message = new MimeMessage();
+        message.From.Add(new MailboxAddress("Sender", "sender@example.com"));
+        message.To.Add(new MailboxAddress("Recipient", to));
+        message.Subject = subject;
+        message.Body = new TextPart("plain") { Text = body };
+
+        using var client = new SmtpClient();
+        await client.ConnectAsync(_smtpHost, _smtpPort, false);
+        await client.SendAsync(message);
+        await client.DisconnectAsync(true);
+    }
+}
