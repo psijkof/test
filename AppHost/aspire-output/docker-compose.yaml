@@ -14,8 +14,8 @@ services:
     environment:
       ACCEPT_EULA: "Y"
       SEQ_FIRSTRUN_NOAUTHENTICATION: "True"
-    expose:
-      - "80"
+    ports:
+      - "5341:80"
     volumes:
       - type: "volume"
         target: "/data"
@@ -27,9 +27,10 @@ services:
     image: "docker.io/axllent/mailpit:v1.22.3"
     environment:
       MP_DATABASE: "/data/mailpit.db"
+    ports:
+      - "8025"
     expose:
       - "1025"
-      - "8025"
     volumes:
       - type: "volume"
         target: "/data"
