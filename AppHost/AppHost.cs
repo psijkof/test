@@ -2,7 +2,7 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddDockerComposeEnvironment("aspirestack");
+builder.AddDockerComposeEnvironment("econocomBPC");
 
 var adminPassword = builder.AddParameter("admin-password", secret: true);
 
