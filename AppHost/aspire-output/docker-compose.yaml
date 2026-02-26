@@ -1,5 +1,5 @@
 services:
-  aspirestack-dashboard:
+  econocombpc-dashboard:
     image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:latest"
     ports:
       - "18888"
@@ -71,7 +71,7 @@ services:
       MAILPIT_HOST: "mailpit"
       MAILPIT_PORT: "1025"
       MAILPIT_URI: "smtp://mailpit:1025"
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://aspirestack-dashboard:18889"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://econocomBPC-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "WebApp"
     ports:
