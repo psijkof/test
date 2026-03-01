@@ -8,11 +8,12 @@
 <h3>Mail</h3>
 
 <button @onclick="@(async () => await SendEmailAsync("user@localhost.test", "test email", "dear user, you read this, so it works!"))" type="button">Send an email</button>
-<label class="form-label">Email sent at: @DateTime.Now.TimeOfDay</label>
+<label class="form-label">Email sent at: @_lastEmailSentTime</label>
 
 @code {
     private string _smtpHost = string.Empty;
     private int _smtpPort;
+    private TimeOnly? _lastEmailSentTime;
 
     protected override Task OnParametersSetAsync()
     {
@@ -38,6 +39,6 @@
         await client.ConnectAsync(_smtpHost, _smtpPort, false);
         await client.SendAsync(message);
         await client.DisconnectAsync(true);
-
+        _lastEmailSentTime = TimeOnly.FromDateTime(DateTime.Now);
     }
 }

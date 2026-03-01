@@ -29,7 +29,7 @@
                             var index = i;
                             var item = items[i];
                             <tr draggable="true"
-                                style="cursor:grab; @(dragOverIndex == index && dragSourceIndex != index ? "border-top: 2px solid #0d6efd;" : "")"
+                                style="cursor:grab; @(dragOverIndex == index && dragSourceIndex != index ? (dragSourceIndex < index ? "border-bottom: 2px solid #0d6efd;" : "border-top: 2px solid #0d6efd;") : "")"
                                 class="@(dragSourceIndex == index ? "table-active opacity-50" : "")"
                                 @ondragstart="@(() => DragStart(index))"
                                 @ondragend="DragEnd"

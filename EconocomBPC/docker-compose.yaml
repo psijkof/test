@@ -1,14 +1,4 @@
 services:
-  econocombpc-dashboard:
-    image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:latest"
-    ports:
-      - "18888"
-    expose:
-      - "18889"
-      - "18890"
-    networks:
-      - "aspire"
-    restart: "always"
   seq:
     image: "docker.io/datalust/seq:2025.2"
     environment:
@@ -76,9 +66,6 @@ services:
       MAILPIT_HOST: "mailpit"
       MAILPIT_PORT: "1025"
       MAILPIT_URI: "smtp://mailpit:1025"
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://econocomBPC-dashboard:18889"
-      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
-      OTEL_SERVICE_NAME: "WebApp"
     ports:
       - "${WEBAPP_PORT}"
     depends_on:
