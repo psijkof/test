@@ -9,7 +9,6 @@ builder.AddDockerComposeEnvironment("econocomBPC")
 var adminPassword = builder.AddParameter("admin-password", secret: true);
 
 var seq = builder.AddSeq("seq", 5341)
-    .WithExternalHttpEndpoints()
     .WithLifetime(ContainerLifetime.Persistent)
     .WithExternalHttpEndpoints()
     .WithDataVolume("seqdata")
@@ -17,7 +16,6 @@ var seq = builder.AddSeq("seq", 5341)
 
 var mailpit = builder.AddMailPit("mailpit")
     .WithLifetime(ContainerLifetime.Persistent)
-    .WithExternalHttpEndpoints()
     .WithDataVolume("maildata")
     .PublishAsDockerComposeService((r, s) => { s.Name = "mailpit"; });
 
@@ -28,7 +26,6 @@ var db = builder.AddSqlServer("sqlserver", adminPassword)
     .AddDatabase("EcoBpc");
 
 builder.AddProject<WebApp>(nameof(WebApp), "https")
-    .WithExternalHttpEndpoints()
     .WithReference(db)
     .WaitFor(db)
     .WithReference(seq)
